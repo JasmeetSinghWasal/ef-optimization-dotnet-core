@@ -34,6 +34,50 @@ public class ProductController : ControllerBase
         return Ok(products);
     }
 
+
+
+// Benchmarking endpoints - for testing the performance difference between tracking and no-tracking queries
+    [HttpGet("benchmark/tracking")]
+    public async Task<ActionResult<object>> BenchmarkTracking()
+    {
+        GC.Collect();
+        long memBefore = GC.GetTotalMemory(true);
+        var sw = Stopwatch.StartNew();
+
+        var products = await _context.Products.ToListAsync();
+
+        sw.Stop();
+        long memAfter = GC.GetTotalMemory(false);
+
+        return Ok(new
+        {
+            mode = "Tracking",
+            timeMs = sw.ElapsedMilliseconds,
+            memoryKB = (memAfter - memBefore) / 1024,
+            rowCount = products.Count
+        });
+    }
+    [HttpGet("benchmark/notracking")]
+    public async Task<ActionResult<object>> BenchmarkNoTracking()
+    {
+        GC.Collect();
+        long memBefore = GC.GetTotalMemory(true);
+        var sw = Stopwatch.StartNew();
+
+        var products = await _context.Products.AsNoTracking().ToListAsync();
+
+        sw.Stop();
+        long memAfter = GC.GetTotalMemory(false);
+
+        return Ok(new
+        {
+            mode = "NoTracking",
+            timeMs = sw.ElapsedMilliseconds,
+            memoryKB = (memAfter - memBefore) / 1024,
+            rowCount = products.Count
+        });
+    }
+    
     // GET: api/product/5
     [HttpGet("{id}")]
     public async Task<ActionResult<Product>> GetProduct(int id)
