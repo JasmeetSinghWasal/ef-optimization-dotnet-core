@@ -20,6 +20,19 @@ public class ProductController : ControllerBase
     {
         return await _context.Products.ToListAsync();
     }
+    // Solution to over fetching : Fetch only the data we need using Projection with Select, LINQ
+    [HttpGet("fetchNamesOnly")]
+    public async Task<ActionResult<IEnumerable<Product>>> GetProductsOverFetch()
+    {
+        var products = await _context.Products
+     .Select(p => new
+     {
+         p.Name
+     })
+     .ToListAsync();
+
+        return Ok(products);
+    }
 
     // GET: api/product/5
     [HttpGet("{id}")]
