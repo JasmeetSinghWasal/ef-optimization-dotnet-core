@@ -26,6 +26,20 @@ This project illustrates real-world EF Core challenges in a .NET 10 environment,
 
 Built with .NET 10's latest features (e.g., enhanced AOT compilation and minimal APIs), it provides benchmarking endpoints to quantify performance gains.
 
+## 🎯 Why This Exists
+
+At enterprise scale, poorly written EF Core queries silently kill performance.  
+This project demonstrates how to identify and fix the most common EF pitfalls — with benchmarks to prove the difference.
+
+## 🔍 Problems Addressed
+
+| Problem | Impact | Solution Demonstrated |
+|---------|--------|----------------------|
+| N+1 Queries | Hundreds of DB roundtrips for one request | `.Include()` eager loading |
+| Over-fetching | Bloated payloads, wasted memory | `.Select()` projections |
+| Change Tracking on reads | CPU overhead on read-heavy endpoints | `.AsNoTracking()` |
+| Synchronous queries | Thread starvation under load | Async throughout |
+
 ## Architecture
 - **Framework**: .NET 10 (ASP.NET Core Web API)
 - **ORM**: Entity Framework Core 10.x with SQLite for simplicity (easily swappable to SQL Server/PostgreSQL)
